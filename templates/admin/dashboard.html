@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVPX — Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#050508; --bg2:#0a0a12; --side:#08080f; --blue:#ff0033; --text:#e0e0e0; --muted:#553344; --border:#2e1a1a; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+        body::after { content:''; position:fixed; top:0; left:0; width:100%; height:100%; background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,0,51,0.006) 3px,rgba(255,0,51,0.006) 6px); pointer-events:none; z-index:9999; }
+        .font-mono { font-family:'JetBrains Mono',monospace; }
+        .sidebar { position:fixed; top:0; left:0; width:240px; height:100vh; background:var(--side); border-right:1px solid var(--border); z-index:1000; overflow-y:auto; }
+        .sidebar-h { padding:1.5rem; border-bottom:1px solid var(--border); text-align:center; }
+        .sidebar-h .brand { font-family:'Orbitron',monospace; font-weight:900; font-size:1.1rem; color:var(--blue); }
+        .sidebar-nav { padding:0.8rem 0; }
+        .sidebar-nav a { display:flex; align-items:center; gap:0.7rem; padding:0.7rem 1.5rem; color:var(--muted); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.78rem; transition:all 0.3s; border-left:3px solid transparent; }
+        .sidebar-nav a:hover, .sidebar-nav a.active { color:var(--blue); background:rgba(255,0,51,0.04); border-left-color:var(--blue); }
+        .sidebar-nav a i { width:18px; text-align:center; }
+        .main { margin-left:240px; padding:2rem; position:relative; z-index:1; min-height:100vh; }
+        .stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:1.5rem; transition:all 0.3s; }
+        .stat-card:hover { border-color:var(--blue); }
+        .stat-num { font-family:'Orbitron',monospace; font-weight:700; font-size:1.8rem; color:var(--blue); }
+        .stat-lbl { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--muted); }
+        .card-c { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:1.5rem; }
+        .cyber-inp { background:#050508; border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:0.8rem; padding:0.55rem 1rem; width:100%; border-radius:4px; outline:none; transition:all 0.3s; }
+        .cyber-inp:focus { border-color:var(--blue); }
+        .cyber-sel { background:#050508; border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:0.8rem; padding:0.55rem 1rem; width:100%; border-radius:4px; outline:none; }
+        .btn-a { background:var(--blue); color:#fff; border:none; font-family:'JetBrains Mono',monospace; font-size:0.72rem; padding:0.55rem 1.2rem; border-radius:4px; cursor:pointer; transition:all 0.3s; text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem; }
+        .btn-a:hover { box-shadow:0 0 20px rgba(255,0,51,0.25); color:#fff; }
+        .btn-ao { background:transparent; border:1px solid var(--blue); color:var(--blue); font-family:'JetBrains Mono',monospace; font-size:0.65rem; padding:0.35rem 0.75rem; border-radius:4px; cursor:pointer; transition:all 0.3s; text-decoration:none; }
+        .btn-ao:hover { background:var(--blue); color:#fff; }
+        .btn-d { background:transparent; border:1px solid #ff3355; color:#ff3355; font-family:'JetBrains Mono',monospace; font-size:0.65rem; padding:0.35rem 0.75rem; border-radius:4px; cursor:pointer; transition:all 0.3s; text-decoration:none; }
+        .btn-d:hover { background:#ff3355; color:#fff; }
+        .admin-tbl { width:100%; border-collapse:separate; border-spacing:0; }
+        .admin-tbl th { font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--muted); letter-spacing:1px; padding:0.6rem 0.8rem; border-bottom:1px solid var(--border); text-align:left; }
+        .admin-tbl td { padding:0.55rem 0.8rem; border-bottom:1px solid #0e0e1a; font-size:0.78rem; color:#aaa; vertical-align:middle; }
+        .admin-tbl tr:hover td { background:rgba(255,0,51,0.015); }
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background:var(--bg); }
+        ::-webkit-scrollbar-thumb { background:rgba(255,0,51,0.3); border-radius:3px; }
+        @media (max-width:768px) { .sidebar { width:100%; height:auto; position:relative; } .main { margin-left:0; } }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-h">
+            <div class="brand">SVPX</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:var(--muted);margin-top:4px;">// ADMIN PANEL //</div>
+        </div>
+        <div class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="{{ url_for('admin_downloads') }}"><i class="fas fa-download"></i> Downloads</a>
+            <a href="{{ url_for('admin_news') }}"><i class="fas fa-newspaper"></i> News</a>
+            <a href="{{ url_for('admin_categories') }}"><i class="fas fa-tags"></i> Categories</a>
+            <a href="{{ url_for('admin_settings') }}"><i class="fas fa-cog"></i> Settings</a>
+            <hr style="border-color:var(--border);margin:1rem 1.5rem;">
+            <a href="{{ url_for('index') }}"><i class="fas fa-external-link-alt"></i> View Site</a>
+            <a href="{{ url_for('admin_logout') }}" style="color:#ff3355;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 style="font-family:'Orbitron',monospace;font-weight:700;font-size:1.4rem;">Dashboard</h1>
+                <p style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);">Welcome, {{ session.get('admin_username', 'Admin') }}</p>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);" id="clock"></div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for cat, msg in messages %}
+            <div style="background:{% if cat == 'success' %}rgba(0,255,136,0.1){% else %}rgba(255,0,51,0.1){% endif %};border:1px solid {% if cat == 'success' %}rgba(0,255,136,0.2){% else %}rgba(255,0,51,0.2){% endif %};color:{% if cat == 'success' %}#00ff88{% else %}#ff0033{% endif %};font-family:'JetBrains Mono',monospace;font-size:0.7rem;padding:0.6rem 1rem;border-radius:4px;margin-bottom:1rem;">
+                {{ '>' if cat == 'success' else '!' }} {{ msg }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-lg-3">
+                <div class="stat-card"><div class="stat-lbl mb-1">DOWNLOADS</div><div class="stat-num">{{ stats.total_downloads }}</div></div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card"><div class="stat-lbl mb-1">CATEGORIES</div><div class="stat-num">{{ stats.total_categories }}</div></div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card"><div class="stat-lbl mb-1">NEWS ARTICLES</div><div class="stat-num">{{ stats.total_news }}</div></div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="stat-card"><div class="stat-lbl mb-1">TOTAL DOWNLOAD COUNT</div><div class="stat-num">{{ stats.total_dl_count }}</div></div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Add Download Form -->
+            <div class="col-lg-5">
+                <div class="card-c">
+                    <h3 style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--blue);margin-bottom:1.2rem;">
+                        <i class="fas fa-plus-circle me-2"></i> Quick Add Download
+                    </h3>
+                    <form method="POST" action="{{ url_for('admin_add_download') }}" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);display:block;margin-bottom:0.3rem;">TITLE *</label>
+                            <input type="text" name="title" class="cyber-inp" required placeholder="e.g. Silent Aim v3.2">
+                        </div>
+                        <div class="mb-3">
+                            <label style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);display:block;margin-bottom:0.3rem;">DESCRIPTION</label>
+                            <textarea name="description" class="cyber-inp" rows="2" style="resize:vertical;" placeholder="Brief description..."></textarea>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);display:block;margin-bottom:0.3rem;">CATEGORY *</label>
+                                <select name="category_id" class="cyber-sel" required>
+                                    {% for cat in categories %}
+                                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);display:block;margin-bottom:0.3rem;">VERSION</label>
+                                <input type="text" name="version" class="cyber-inp" value="1.0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);display:block;margin-bottom:0.3rem;">FILE</label>
+                            <input type="file" name="file" class="cyber-inp" style="padding:0.4rem 1rem;">
+                        </div>
+                        <div class="mb-3">
+                            <label style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);display:block;margin-bottom:0.3rem;">IMAGE URL</label>
+                            <input type="url" name="image_url" class="cyber-inp" placeholder="https://img.icons8.com/...">
+                        </div>
+                        <div class="mb-3">
+                            <label style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);display:block;margin-bottom:0.3rem;">EXTERNAL LINK</label>
+                            <input type="url" name="file_url" class="cyber-inp" placeholder="https://github.com/...">
+                        </div>
+                        <button type="submit" class="btn-a"><i class="fas fa-save me-1"></i> Publish</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Downloads -->
+            <div class="col-lg-7">
+                <div class="card-c">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h3 style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#fff;margin:0;">
+                            <i class="fas fa-history me-2" style="color:var(--blue);"></i> Recent Downloads
+                        </h3>
+                        <a href="{{ url_for('admin_downloads') }}" class="btn-a">Manage All</a>
+                    </div>
+                    {% if stats.recent_downloads %}
+                    <div style="overflow-x:auto;">
+                        <table class="admin-tbl">
+                            <thead>
+                                <tr><th>ID</th><th>Title</th><th>Category</th><th>DLs</th><th>Date</th></tr>
+                            </thead>
+                            <tbody>
+                                {% for dl in stats.recent_downloads %}
+                                <tr>
+                                    <td style="color:var(--blue);font-family:'JetBrains Mono',monospace;">#{{ dl.id }}</td>
+                                    <td style="color:#fff;">{{ dl.title[:35] }}{% if dl.title|length > 35 %}...{% endif %}</td>
+                                    <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted);">{{ dl.category_name or 'N/A' }}</span></td>
+                                    <td style="font-family:'JetBrains Mono',monospace;">{{ dl.downloads_count }}</td>
+                                    <td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;">{{ dl.created_at[:10] if dl.created_at else '--' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div style="text-align:center;padding:2rem;font-family:'JetBrains Mono',monospace;color:var(--muted);">No downloads yet.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() { document.getElementById('clock').textContent = new Date().toTimeString().split(' ')[0]; }
+        updateClock(); setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
